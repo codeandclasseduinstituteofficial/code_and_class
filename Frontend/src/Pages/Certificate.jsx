@@ -21,7 +21,7 @@ const Certificate = ({ name, relation, course, period, examDate, division = 'A',
     const [hasSearched, setHasSearched] = useState(false);
     const [responseStatus, setResponseStatus] = useState(null)
 
-    const API_BASE = `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/certificates`
+    const API_BASE = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/certificates`
 
     const handleSearchCertificate = async () => {
         try {
@@ -32,11 +32,11 @@ const Certificate = ({ name, relation, course, period, examDate, division = 'A',
             if (response.ok) {
                 setResponseStatus(200)
             }
-            if(response.status === 404){
+            if (response.status === 404) {
                 setError('Certificate not found. Please check the number.');
             }
 
-            if(response.status === 403) setError('Certificate not Verified Yet!.');
+            if (response.status === 403) setError('Certificate not Verified Yet!.');
 
             const certificateData = await response.json();
 

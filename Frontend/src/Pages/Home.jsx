@@ -120,7 +120,7 @@ const Home = () => {
     const fetchPopularCourses = async () => {
       try {
         const { data } = await axios.get(
-          `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/courses/popular`
+          `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/courses/popular`
         );
 
         setDiplomaCourses(data);

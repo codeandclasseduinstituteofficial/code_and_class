@@ -4,7 +4,7 @@ import axios from 'axios';
 //   .env            -> VITE_API_URL=http://localhost:8000/api
 //   .env.production -> VITE_API_URL=https://codeandclass.onrender.com/api
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://code-and-class.onrender.com/api',
   withCredentials: true,
 });
 

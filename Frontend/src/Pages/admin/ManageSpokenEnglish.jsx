@@ -11,7 +11,7 @@ import {
     FaTimes,
 } from "react-icons/fa";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api";
 
 const SKILLS = [
     { key: "Listening", icon: FaHeadphones },
@@ -159,11 +159,10 @@ const ManageSpokenEnglish = () => {
                             <button
                                 key={s.key}
                                 onClick={() => setSkill(s.key)}
-                                className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold transition ${
-                                    active
+                                className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold transition ${active
                                         ? "bg-indigo-600 text-white shadow"
                                         : "bg-white text-gray-600 hover:bg-indigo-50"
-                                }`}
+                                    }`}
                             >
                                 <Icon /> {s.key}
                             </button>

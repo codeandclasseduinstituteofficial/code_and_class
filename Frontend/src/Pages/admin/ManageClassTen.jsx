@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api";
 
 const emptySubjectForm = { subject: "", subjectIcon: "" };
 const emptyChapterForm = { chapterNumber: "", chapterName: "" };

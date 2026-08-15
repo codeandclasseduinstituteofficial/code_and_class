@@ -34,7 +34,7 @@ const OnlineCourseDetails = () => {
 
   const fetchCourse = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/courses/online-courses/${courseId}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/courses/online-courses/${courseId}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       setCourse(data);

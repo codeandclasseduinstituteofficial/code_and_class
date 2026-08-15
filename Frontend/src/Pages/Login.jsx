@@ -52,8 +52,8 @@ const Login = () => {
     try {
 
       const endpoint = isSignup
-        ? `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/users/register`
-        : `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/users/login`;
+        ? `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/users/register`
+        : `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/users/login`;
 
 
       const body = isSignup

@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { AuthContext } from '../../context/AuthProvider';
 import { authAxios } from '../../utils/authAxios';
 
-const API_BASE = `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/courses`;
+const API_BASE = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/courses`;
 
 const CourseManager = () => {
     const [courses, setCourses] = useState([]);

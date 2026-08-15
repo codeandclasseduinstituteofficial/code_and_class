@@ -7,7 +7,7 @@ const Logout = () => {
   useEffect(() => {
     const logoutUser = async () => {
       try {
-        await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/users/logout`, {
+        await fetch(`${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/users/logout`, {
           method: 'POST',
           credentials: 'include',
         });

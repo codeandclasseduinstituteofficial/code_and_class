@@ -8,7 +8,7 @@ import {
     FaTrash,
 } from "react-icons/fa";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api";
 
 const AdminFees = () => {
     const { accessToken } = useContext(AuthContext);

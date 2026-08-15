@@ -57,7 +57,7 @@ const AddCourse = () => {
 
         try {
             const res = await api.post(
-                `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/courses`,
+                `${import.meta.env.VITE_API_URL || 'https://code-and-class.onrender.com/api'}/courses`,
                 courseData
             );
 

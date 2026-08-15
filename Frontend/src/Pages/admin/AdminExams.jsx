@@ -3,7 +3,7 @@ import { AuthContext } from "../../context/AuthProvider";
 import toast from "react-hot-toast";
 import { FaPlus, FaEdit, FaTrash, FaTimes } from "react-icons/fa";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api";
 
 const emptyForm = {
     title: "",

@@ -16,7 +16,7 @@ const SuccessStories = () => {
     const fetchSuccessStories = async () => {
         try {
             const { data } = await axios.get(
-                `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/successStories/`
+                `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/successStories/`
             );
 
             setSuccessStories(data.stories || []);
@@ -31,7 +31,7 @@ const SuccessStories = () => {
     const fetchStudentVoices = async () => {
         try {
             const { data } = await axios.get(
-                `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/studentVoice/`
+                `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/studentVoice/`
             );
 
             setStudentVoices(data.voices || []);

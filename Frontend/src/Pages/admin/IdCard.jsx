@@ -4,7 +4,7 @@ import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import logo from "../../assets/Logo.jpeg";
 
-const API_BASE = `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/idcard`;
+const API_BASE = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/idcard`;
 
 const IdCard = () => {
     const { id } = useParams();

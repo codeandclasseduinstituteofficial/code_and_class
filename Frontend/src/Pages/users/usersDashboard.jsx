@@ -15,7 +15,7 @@ import {
 import { AuthContext } from "../../context/AuthProvider";
 import instance from "../../utils/axios";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api";
 
 const dashboardLinks = [
     { title: "Class 10", link: "/classes/Class-10", icon: FaSchool },
@@ -79,7 +79,7 @@ const UsersDashboard = () => {
                     toast.error(`Your fees are due: ₹${totalDue}`, { duration: 6000 });
                 }
             })
-            .catch(() => {});
+            .catch(() => { });
     }, [accessToken]);
 
     if (!user) return null;

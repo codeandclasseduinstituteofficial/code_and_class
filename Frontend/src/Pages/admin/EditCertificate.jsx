@@ -22,7 +22,7 @@ const CertificateManager = () => {
         fetchCertificates()
     }, []);
 
-    const API_BASE = `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/certificates`
+    const API_BASE = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/certificates`
 
     const fetchCertificates = async () => {
         try {
@@ -95,7 +95,7 @@ const CertificateManager = () => {
                 updated[editingIndex] = updatedCert;
                 return updated;
             });
-            
+
             toast.success("Certificate updated successfully!");
             setEditingIndex(null);
 

@@ -38,7 +38,7 @@ const AdminSuccessStories = () => {
             setLoading(true);
 
             const { data } = await axios.get(
-                `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/successStories/`
+                `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/successStories/`
             );
 
             // Adjust according to your backend response
@@ -92,7 +92,7 @@ const AdminSuccessStories = () => {
             }
 
             await api.post(
-                `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/successStories/`,
+                `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/successStories/`,
                 {
                     videoUrl,
                 }
@@ -122,7 +122,7 @@ const AdminSuccessStories = () => {
 
         try {
             await api.delete(
-                `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/successStories/${id}`
+                `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/successStories/${id}`
             );
 
             fetchSuccessStories();
