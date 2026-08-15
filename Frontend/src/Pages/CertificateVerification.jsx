@@ -19,7 +19,7 @@ const CertificateVerification = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/certificates/${encodeURIComponent(
+        `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/certificates/${encodeURIComponent(
           certNumber.toUpperCase()
         )}`
       );

@@ -7,7 +7,7 @@ const SpokenEnglishProgress = () => {
   const [units, setUnits] = useState([]);
   const [selectedChapter, setSelectedChapter] = useState(null);
 
-  const API_BASE = `${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/spoken-lectures`;
+  const API_BASE = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/spoken-lectures`;
 
   useEffect(() => {
     fetchUnits();
@@ -125,18 +125,16 @@ const SpokenEnglishProgress = () => {
                           <button
                             key={idx}
                             onClick={() => setSelectedChapter(chapter)}
-                            className={`w-full text-left px-6 py-3 flex items-center gap-3 transition border-l-4 ${
-                              active
+                            className={`w-full text-left px-6 py-3 flex items-center gap-3 transition border-l-4 ${active
                                 ? "bg-brand-50 border-brand-600 text-brand-700"
                                 : "border-transparent hover:bg-slate-50 text-slate-600"
-                            }`}
+                              }`}
                           >
                             <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                                active
+                              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${active
                                   ? "bg-brand-600 text-white"
                                   : "bg-slate-200 text-slate-700"
-                              }`}
+                                }`}
                             >
                               {idx + 1}
                             </div>

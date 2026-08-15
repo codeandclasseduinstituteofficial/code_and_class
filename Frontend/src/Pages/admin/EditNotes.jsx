@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/AuthProvider';
 import { toast } from 'react-toastify';
 
-const API_BASE = `${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/notes`; // Update if needed
+const API_BASE = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/notes`; // Update if needed
 
 const EditNotes = () => {
   const { accessToken } = useContext(AuthContext);

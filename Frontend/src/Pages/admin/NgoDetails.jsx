@@ -14,7 +14,7 @@ const NgoDetails = () => {
         image: ''
     });
 
-    const API_URL = `${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/ngos`;
+    const API_URL = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/ngos`;
 
     // Fetch all NGOs
     const getAllNgos = async () => {

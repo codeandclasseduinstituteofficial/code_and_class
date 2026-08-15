@@ -18,7 +18,7 @@ const Gallery = () => {
         const fetchGallery = async () => {
             try {
                 const res = await fetch(
-                    `${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/gallery`
+                    `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/gallery`
                 );
                 const data = await res.json();
                 setImages(data);

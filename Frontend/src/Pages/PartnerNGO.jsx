@@ -168,7 +168,7 @@ const PartnerNGO = () => {
     const fetchNgos = useCallback(async () => {
         try {
             setStatus("loading");
-            const response = await fetch(`${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/ngos/ngos`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/ngos/ngos`);
             if (!response.ok) throw new Error("Failed to fetch NGOs");
 
             const data = await response.json();

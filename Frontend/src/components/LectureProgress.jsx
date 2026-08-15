@@ -12,7 +12,7 @@ const LectureProgress = () => {
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [selectedUnitId, setSelectedUnitId] = useState(null);
 
-  const API_BASE = `${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/lectures`
+  const API_BASE = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/lectures`
 
   useEffect(() => {
     fetchUnits()

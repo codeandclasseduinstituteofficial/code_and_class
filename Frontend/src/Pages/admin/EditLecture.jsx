@@ -7,7 +7,7 @@ const EditLecture = () => {
   const [units, setUnits] = useState([]);
   const [selectedUnit, setSelectedUnit] = useState(null);
 
-  const API_BASE = `${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/lectures`;
+  const API_BASE = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/lectures`;
 
   useEffect(() => {
     fetchLectures();

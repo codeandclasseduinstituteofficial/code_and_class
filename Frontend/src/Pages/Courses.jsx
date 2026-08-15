@@ -30,7 +30,7 @@ const Courses = () => {
 
   const handleFetchCourses = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/courses`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/courses`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       setCourses(data.courses || data);

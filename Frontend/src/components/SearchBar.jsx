@@ -46,7 +46,7 @@ const SearchBar = () => {
         const res =
             await fetch(
 
-                `${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/search?q=${value}`
+                `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/search?q=${value}`
 
             );
 

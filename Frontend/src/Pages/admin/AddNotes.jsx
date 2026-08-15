@@ -17,7 +17,7 @@ const AddNotes = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
-    const API_BASE = `${import.meta.env.VITE_API_URL || "https://codeandclass.onrender.com/api"}/notes`;
+    const API_BASE = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/notes`;
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;

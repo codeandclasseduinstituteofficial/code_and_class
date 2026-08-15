@@ -160,8 +160,8 @@ const ManageSpokenEnglish = () => {
                                 key={s.key}
                                 onClick={() => setSkill(s.key)}
                                 className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold transition ${active
-                                        ? "bg-indigo-600 text-white shadow"
-                                        : "bg-white text-gray-600 hover:bg-indigo-50"
+                                    ? "bg-indigo-600 text-white shadow"
+                                    : "bg-white text-gray-600 hover:bg-indigo-50"
                                     }`}
                             >
                                 <Icon /> {s.key}
