@@ -4,6 +4,7 @@ import {
   updateQuiz,
   deleteQuiz,
   getQuizForAdmin,
+  getAllQuizzesAdmin,
   getQuizzes,
   getQuizToAttempt,
   submitQuiz,
@@ -13,8 +14,10 @@ import { admin, optionalAuth, protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Student history (declared before /:id so "attempts" isn't parsed as an id)
+// Student history and admin listing (declared before /:id so these fixed
+// segments aren't parsed as a quiz id)
 router.get('/attempts/my', protect, getMyAttempts);
+router.get('/admin/all', protect, admin, getAllQuizzesAdmin);
 
 router.get('/', optionalAuth, getQuizzes);
 router.post('/', protect, admin, createQuiz);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FaBook,
@@ -19,6 +19,7 @@ import {
   FaPlusCircle,
   FaMoneyBillWave,
 } from "react-icons/fa";
+import MaintenanceModal from "../../components/MaintenanceModal";
 
 const sections = [
   {
@@ -26,21 +27,22 @@ const sections = [
     items: [
       { title: "Add Courses", link: "/dashboard/add-course", icon: <FaBook />, color: "from-blue-500 to-cyan-500" },
       { title: "Edit Courses", link: "/dashboard/edit-course", icon: <FaBook />, color: "from-sky-500 to-blue-600" },
-      { title: "Add Lectures", link: "/dashboard/add-class-lecture", icon: <FaChalkboardTeacher />, color: "from-purple-500 to-indigo-600" },
-      { title: "Edit Lectures", link: "/dashboard/edit-lecture", icon: <FaChalkboardTeacher />, color: "from-violet-500 to-purple-600" },
+      { title: "Add Lectures", link: "/dashboard/add-class-lecture", icon: <FaChalkboardTeacher />, color: "from-purple-500 to-indigo-600", maintenance: true },
+      { title: "Edit Lectures", link: "/dashboard/edit-lecture", icon: <FaChalkboardTeacher />, color: "from-violet-500 to-purple-600", maintenance: true },
       { title: "Spoken English", link: "/dashboard/manage-spoken-english", icon: <FaBook />, color: "from-green-500 to-emerald-600" },
       { title: "Student Fees", link: "/dashboard/fees", icon: <FaMoneyBillWave />, color: "from-yellow-500 to-amber-600" },
       { title: "Meeting Links", link: "/dashboard/meeting-links", icon: <FaVideo />, color: "from-sky-500 to-blue-600" },
       { title: "Exams", link: "/dashboard/exams", icon: <FaFileAlt />, color: "from-red-500 to-rose-600" },
       { title: "Blog", link: "/dashboard/blogs", icon: <FaFileAlt />, color: "from-purple-500 to-fuchsia-600" },
-      { title: "Add Notes", link: "/dashboard/add-notes", icon: <FaFileAlt />, color: "from-orange-500 to-amber-500" },
-      { title: "Edit Notes", link: "/dashboard/edit-notes", icon: <FaFileAlt />, color: "from-yellow-500 to-orange-500" },
+      { title: "Add Notes", link: "/dashboard/add-notes", icon: <FaFileAlt />, color: "from-orange-500 to-amber-500", maintenance: true },
+      { title: "Edit Notes", link: "/dashboard/edit-notes", icon: <FaFileAlt />, color: "from-yellow-500 to-orange-500", maintenance: true },
     ],
   },
   {
     heading: "Quizzes & Sales",
     items: [
       { title: "Create Quiz", link: "/dashboard/add-quiz", icon: <FaQuestionCircle />, color: "from-pink-500 to-rose-500" },
+      { title: "Manage Quizzes", link: "/dashboard/manage-quizzes", icon: <FaQuestionCircle />, color: "from-rose-500 to-red-500" },
       { title: "Orders & Revenue", link: "/dashboard/orders", icon: <FaShoppingCart />, color: "from-red-500 to-orange-500" },
     ],
   },
@@ -58,7 +60,7 @@ const sections = [
     heading: "Content & Partners",
     items: [
       { title: "Gallery", link: "/dashboard/edit-gallery", icon: <FaImages />, color: "from-fuchsia-500 to-pink-500" },
-      { title: "NGO Partners", link: "/dashboard/ngo-details", icon: <FaHandsHelping />, color: "from-lime-500 to-green-500" },
+      { title: "NGO Partners", link: "/dashboard/ngo-details", icon: <FaHandsHelping />, color: "from-lime-500 to-green-500", maintenance: true },
     ],
   },
   {
@@ -156,6 +158,17 @@ const stats = [
 ];
 
 const Dashboard = () => {
+
+  const [showMaintenance, setShowMaintenance] = useState(false);
+
+  const handleCardClick = (e, item) => {
+    if (item.maintenance) {
+      e.preventDefault(); // stops <Link> navigation, no route change, no backend call
+      setShowMaintenance(true);
+    }
+    // else: let Link navigate normally
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 relative overflow-hidden">
 
@@ -250,7 +263,11 @@ const Dashboard = () => {
 
                 {section.items.map((item) => (
 
-                  <Link key={item.link} to={item.link}>
+                  <Link
+                    key={item.link}
+                    to={item.link}
+                    onClick={(e) => handleCardClick(e, item)}
+                  >
 
                     <div className="group bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all duration-300 hover:-translate-y-2">
 
@@ -297,6 +314,11 @@ const Dashboard = () => {
         </div>
 
       </div>
+
+      <MaintenanceModal
+        isOpen={showMaintenance}
+        onClose={() => setShowMaintenance(false)}
+      />
 
     </div>
   );

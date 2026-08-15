@@ -15,6 +15,9 @@ const AddQuiz = () => {
   const [description, setDescription] = useState('');
   const [courseId, setCourseId] = useState(''); // '' = free/public quiz
   const [timeLimitMinutes, setTimeLimitMinutes] = useState(10);
+  const [isSpecial, setIsSpecial] = useState(false); // pins this quiz first in the public list
+  const [isPaid, setIsPaid] = useState(false);
+  const [price, setPrice] = useState('');
   const [questions, setQuestions] = useState([emptyQuestion()]);
   const [courses, setCourses] = useState([]);
   const [status, setStatus] = useState('');
@@ -80,6 +83,9 @@ const AddQuiz = () => {
     setDescription('');
     setCourseId('');
     setTimeLimitMinutes(10);
+    setIsSpecial(false);
+    setIsPaid(false);
+    setPrice('');
     setQuestions([emptyQuestion()]);
   };
 
@@ -96,6 +102,10 @@ const AddQuiz = () => {
         return;
       }
     }
+    if (isPaid && (!price || Number(price) <= 0)) {
+      setStatus('error:Set a valid amount for a paid quiz.');
+      return;
+    }
 
     try {
       await instance.post(
@@ -105,6 +115,9 @@ const AddQuiz = () => {
           description,
           course: courseId || null,
           timeLimitMinutes: Number(timeLimitMinutes),
+          isSpecial,
+          isPaid,
+          price: isPaid ? Number(price) : 0,
           questions: questions.map((q) => ({
             questionText: q.questionText,
             options: q.options.map((text) => ({ text })),
@@ -153,6 +166,46 @@ const AddQuiz = () => {
             <label className={labelClass}>Time Limit (min)</label>
             <input type="number" min="1" className={inputClass} value={timeLimitMinutes} onChange={(e) => setTimeLimitMinutes(e.target.value)} />
           </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4">
+          <label className="flex-1 flex items-center gap-2 border border-slate-200 rounded-lg px-4 py-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isSpecial}
+              onChange={(e) => setIsSpecial(e.target.checked)}
+              className="accent-brand-600"
+            />
+            <span className="text-sm text-slate-700">
+              <span className="font-semibold">Special quiz</span> — pinned first in the quiz list
+            </span>
+          </label>
+
+          <label className="flex-1 flex items-center gap-2 border border-slate-200 rounded-lg px-4 py-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isPaid}
+              onChange={(e) => setIsPaid(e.target.checked)}
+              className="accent-brand-600"
+            />
+            <span className="text-sm text-slate-700">
+              <span className="font-semibold">Paid quiz</span> — student must pay before writing it
+            </span>
+          </label>
+
+          {isPaid && (
+            <div className="w-40">
+              <label className={labelClass}>Amount (₹)</label>
+              <input
+                type="number"
+                min="1"
+                className={inputClass}
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="e.g., 49"
+              />
+            </div>
+          )}
         </div>
 
         <div className="space-y-5">

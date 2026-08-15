@@ -797,7 +797,7 @@ const AboutInstructor = () => {
 
                                         <button
                                             onClick={() => {
-                                                window.location.href = "mailto:codeandclass.edu.ins@gmail.com";
+                                                window.location.href = "mailto:asifsir@codeandclass.com";
                                             }}
                                             className="w-11 h-11 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-700 hover:text-white transition"
                                         >

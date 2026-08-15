@@ -19,6 +19,7 @@ const purchaseSchema = new mongoose.Schema(
             enum: [
                 "Class10",
                 "Intermediate",
+                "Quiz",
             ],
             required: true,
         },

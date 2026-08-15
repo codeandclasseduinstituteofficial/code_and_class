@@ -129,7 +129,7 @@ const Contact = () => {
 
                 icon={<FaEnvelopeOpenText />}
                 title="Email"
-                text="codeandclass.edu.ins@gmail.com"
+                text="asifsir@codeandclass.com"
 
               />
 

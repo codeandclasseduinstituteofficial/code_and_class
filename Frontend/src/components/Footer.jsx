@@ -41,7 +41,7 @@ const Footer = () => {
             <Link to="https://whatsapp.com/channel/0029VbBQoOTCHDyr0cD8Jr3j" target='_blank' className="bg-slate-800 hover:bg-brand-600 text-white p-2.5 rounded-full transition">
               <FaWhatsapp />
             </Link>
-            <Link to="mailto:codeandclass.edu.ins@gmail.com" target='_blank' className="bg-slate-800 hover:bg-brand-600 text-white p-2.5 rounded-full transition">
+            <Link to="mailto:asifsir@codeandclass.com" target='_blank' className="bg-slate-800 hover:bg-brand-600 text-white p-2.5 rounded-full transition">
               <SiGmail />
             </Link>
           </div>

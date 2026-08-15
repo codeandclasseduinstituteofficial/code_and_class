@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaLock, FaUnlock, FaQuestionCircle, FaClock } from 'react-icons/fa';
+import { FaLock, FaUnlock, FaQuestionCircle, FaClock, FaStar } from 'react-icons/fa';
 import { AuthContext } from '../context/AuthProvider';
 import instance from '../utils/axios';
 
@@ -42,20 +42,27 @@ const Quizzes = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {quizzes.map((quiz) => (
-              <div key={quiz._id} className="card-surface p-6 flex flex-col">
-                <div className="flex items-start justify-between mb-2">
+              <div key={quiz._id} className={`card-surface p-6 flex flex-col ${quiz.isSpecial ? 'ring-2 ring-amber-400' : ''}`}>
+                <div className="flex items-start justify-between mb-2 gap-2">
                   <h3 className="text-lg font-bold text-slate-900">{quiz.title}</h3>
-                  {quiz.isFree ? (
-                    <span className="text-xs font-semibold text-green-700 bg-green-50 border border-green-200 rounded-full px-2 py-0.5">Free</span>
-                  ) : quiz.isLocked ? (
-                    <span className="text-xs font-semibold text-slate-500 bg-slate-100 border border-slate-200 rounded-full px-2 py-0.5 flex items-center gap-1">
-                      <FaLock className="text-[10px]" /> Locked
-                    </span>
-                  ) : (
-                    <span className="text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-200 rounded-full px-2 py-0.5 flex items-center gap-1">
-                      <FaUnlock className="text-[10px]" /> Unlocked
-                    </span>
-                  )}
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    {quiz.isSpecial && (
+                      <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5 flex items-center gap-1">
+                        <FaStar className="text-[10px]" /> Special
+                      </span>
+                    )}
+                    {quiz.isFree ? (
+                      <span className="text-xs font-semibold text-green-700 bg-green-50 border border-green-200 rounded-full px-2 py-0.5">Free</span>
+                    ) : quiz.isLocked ? (
+                      <span className="text-xs font-semibold text-slate-500 bg-slate-100 border border-slate-200 rounded-full px-2 py-0.5 flex items-center gap-1">
+                        <FaLock className="text-[10px]" /> {quiz.paymentLocked ? `₹${quiz.price}` : 'Locked'}
+                      </span>
+                    ) : (
+                      <span className="text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-200 rounded-full px-2 py-0.5 flex items-center gap-1">
+                        <FaUnlock className="text-[10px]" /> Unlocked
+                      </span>
+                    )}
+                  </div>
                 </div>
                 {quiz.description && <p className="text-sm text-slate-500 mb-4 flex-1">{quiz.description}</p>}
                 <div className="flex items-center gap-4 text-xs text-slate-400 mb-4">
@@ -63,9 +70,13 @@ const Quizzes = () => {
                   <span className="flex items-center gap-1"><FaClock /> {quiz.timeLimitMinutes} min</span>
                 </div>
 
-                {quiz.isLocked ? (
+                {quiz.courseLocked ? (
                   <Link to={`/courses/${quiz.course?._id}`} className="btn-outline w-full">
                     View Course to Unlock
+                  </Link>
+                ) : quiz.paymentLocked ? (
+                  <Link to={`/buy-quiz/${quiz._id}`} className="btn-primary w-full">
+                    Pay ₹{quiz.price} to Unlock
                   </Link>
                 ) : (
                   <Link to={`/quizzes/${quiz._id}`} className="btn-primary w-full">

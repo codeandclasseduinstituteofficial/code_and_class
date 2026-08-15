@@ -26,12 +26,22 @@ const QuizAttempt = () => {
         setQuiz(data);
         setSecondsLeft(data.timeLimitMinutes * 60);
       } catch (err) {
-        setError(err?.response?.data?.message || 'Could not load this quiz.');
+        const data = err?.response?.data;
+        if (data?.requiresPayment) {
+          navigate(`/buy-quiz/${quizId}`);
+          return;
+        }
+        if (data?.requiresLogin) {
+          navigate('/login');
+          return;
+        }
+        setError(data?.message || 'Could not load this quiz.');
       } finally {
         setLoading(false);
       }
     };
     fetchQuiz();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quizId, accessToken]);
 
   // Countdown timer — auto-submits when it hits zero
@@ -113,13 +123,12 @@ const QuizAttempt = () => {
                       return (
                         <div
                           key={opt._id}
-                          className={`text-sm px-3 py-1.5 rounded-lg ${
-                            isCorrectOpt
+                          className={`text-sm px-3 py-1.5 rounded-lg ${isCorrectOpt
                               ? 'bg-green-50 text-green-700 font-medium'
                               : isSelectedOpt
-                              ? 'bg-red-50 text-red-700'
-                              : 'text-slate-500'
-                          }`}
+                                ? 'bg-red-50 text-red-700'
+                                : 'text-slate-500'
+                            }`}
                         >
                           {opt.text}
                         </div>
@@ -157,11 +166,10 @@ const QuizAttempt = () => {
                 {q.options.map((opt, idx) => (
                   <label
                     key={opt._id}
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg border cursor-pointer transition-colors ${
-                      answers[q._id] === idx
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg border cursor-pointer transition-colors ${answers[q._id] === idx
                         ? 'border-brand-500 bg-brand-50'
                         : 'border-slate-200 hover:border-slate-300'
-                    }`}
+                      }`}
                   >
                     <input
                       type="radio"

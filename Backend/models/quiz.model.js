@@ -34,6 +34,14 @@ const quizSchema = new mongoose.Schema(
       validate: [(arr) => arr.length > 0, 'A quiz needs at least one question'],
     },
     isPublished: { type: Boolean, default: true },
+
+    // A "special" quiz is pinned to the front of the public quiz list.
+    isSpecial: { type: Boolean, default: false },
+
+    // Paid quizzes require a successful Purchase (contentType: 'Quiz') before
+    // a student can fetch questions or submit answers. `price` is in rupees.
+    isPaid: { type: Boolean, default: false },
+    price: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );

@@ -14,6 +14,7 @@ import TossApplication from '../models/tossApplication.model.js';
 import ClassTen from '../models/classTenth.model.js';
 import Intermediate from '../models/Intermediate.model.js';
 import Purchase from '../models/Purchase.model.js';
+import Quiz from '../models/quiz.model.js';
 
 const applicationModels = {
   course: CourseApplication,
@@ -70,7 +71,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   // `course.price` is already the final amount the student pays.
   // `course.discount` is just a percentage badge shown next to it — never a price.
   // const rupees = parsePriceToRupees(course.price);
-  
+
   // if (rupees <= 0) {
   //   res.status(400);
   //   throw new Error('This course does not have a valid price set');
@@ -78,23 +79,23 @@ export const createOrder = asyncHandler(async (req, res) => {
 
   // const coursePrice = parsePriceToRupees(course.price);
 
-// If frontend sends an amount (Online Courses),
-// use it. Otherwise use the normal course price.
-// const finalAmount = amount || coursePrice;
+  // If frontend sends an amount (Online Courses),
+  // use it. Otherwise use the normal course price.
+  // const finalAmount = amount || coursePrice;
 
-const coursePrice = parsePriceToRupees(course.price);
+  const coursePrice = parsePriceToRupees(course.price);
 
-// ₹1000 platform fee only for online courses
-const platformFee = isOnlineCourse ? 1000 : 0;
+  // ₹1000 platform fee only for online courses
+  const platformFee = isOnlineCourse ? 1000 : 0;
 
-const finalAmount = coursePrice + platformFee;
+  const finalAmount = coursePrice + platformFee;
 
-if (finalAmount <= 0) {
-  res.status(400);
-  throw new Error('Invalid payment amount');
-}
+  if (finalAmount <= 0) {
+    res.status(400);
+    throw new Error('Invalid payment amount');
+  }
 
-const amountInPaise = Math.round(finalAmount * 100);
+  const amountInPaise = Math.round(finalAmount * 100);
 
   let razorpayOrder;
   try {
@@ -272,42 +273,60 @@ export const createChapterOrder = asyncHandler(async (req, res) => {
 });
 
 
-// @desc  Create a Razorpay order to unlock a paid Class 10 problem or Intermediate topic video
+// @desc  Create a Razorpay order to unlock a paid Class 10 problem, Intermediate
+//        topic video, or a paid quiz
 // @route POST /api/payments/create-topic-order
 // @access Private (logged in user)
 export const createTopicOrder = asyncHandler(async (req, res) => {
   const { contentId, contentType } = req.body;
 
-  if (!['Class10', 'Intermediate'].includes(contentType)) {
+  if (!['Class10', 'Intermediate', 'Quiz'].includes(contentType)) {
     res.status(400);
     throw new Error('Invalid content type');
   }
 
-  const Model = contentType === 'Class10' ? ClassTen : Intermediate;
-  const arrayPath = contentType === 'Class10' ? 'problems' : 'topics';
-  const chaptersPath = contentType === 'Class10' ? 'chapters.problems' : 'chapters.topics';
-
-  const doc = await Model.findOne({ [`${chaptersPath}._id`]: contentId });
-  if (!doc) {
-    res.status(404);
-    throw new Error('Video not found');
-  }
-
   let item;
-  doc.chapters.forEach((chapter) => {
-    chapter[arrayPath].forEach((entry) => {
-      if (entry._id.toString() === contentId) item = entry;
-    });
-  });
+  let notFoundMessage;
+  let freeMessage;
 
-  if (!item) {
-    res.status(404);
-    throw new Error('Video not found');
+  if (contentType === 'Quiz') {
+    notFoundMessage = 'Quiz not found';
+    freeMessage = 'This quiz is free — no payment needed';
+
+    item = await Quiz.findById(contentId);
+    if (!item) {
+      res.status(404);
+      throw new Error(notFoundMessage);
+    }
+  } else {
+    notFoundMessage = 'Video not found';
+    freeMessage = 'This video is free — no payment needed';
+
+    const Model = contentType === 'Class10' ? ClassTen : Intermediate;
+    const arrayPath = contentType === 'Class10' ? 'problems' : 'topics';
+    const chaptersPath = contentType === 'Class10' ? 'chapters.problems' : 'chapters.topics';
+
+    const doc = await Model.findOne({ [`${chaptersPath}._id`]: contentId });
+    if (!doc) {
+      res.status(404);
+      throw new Error(notFoundMessage);
+    }
+
+    doc.chapters.forEach((chapter) => {
+      chapter[arrayPath].forEach((entry) => {
+        if (entry._id.toString() === contentId) item = entry;
+      });
+    });
+
+    if (!item) {
+      res.status(404);
+      throw new Error(notFoundMessage);
+    }
   }
 
   if (!item.isPaid) {
     res.status(400);
-    throw new Error('This video is free — no payment needed');
+    throw new Error(freeMessage);
   }
 
   const alreadyPurchased = await Purchase.findOne({
@@ -318,13 +337,13 @@ export const createTopicOrder = asyncHandler(async (req, res) => {
   });
   if (alreadyPurchased) {
     res.status(400);
-    throw new Error('You already have access to this video');
+    throw new Error(contentType === 'Quiz' ? 'You already have access to this quiz' : 'You already have access to this video');
   }
 
   const rupees = Number(item.price);
   if (!Number.isFinite(rupees) || rupees <= 0) {
     res.status(400);
-    throw new Error('This video does not have a valid price set');
+    throw new Error(contentType === 'Quiz' ? 'This quiz does not have a valid price set' : 'This video does not have a valid price set');
   }
 
   const amountInPaise = Math.round(rupees * 100);
@@ -360,7 +379,7 @@ export const createTopicOrder = asyncHandler(async (req, res) => {
     currency: 'INR',
     keyId: process.env.RAZORPAY_KEY_ID,
     dbOrderId: order._id,
-    videoTitle: item.name || item.topicName,
+    videoTitle: item.name || item.topicName || item.title,
   });
 });
 

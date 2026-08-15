@@ -125,7 +125,7 @@ const ClassTenth = () => {
 
         if (problem.isPaid) {
 
-            navigate(`/buy-video/${encodeURIComponent(topic._id)}`);
+            navigate(`/buy-video/${encodeURIComponent(problem._id)}`);
 
         } else {
 
@@ -324,11 +324,11 @@ const ClassTenth = () => {
                             selectedSubject.chapters ||
                             []
                         ).map(
-                            (chapter) => (
+                            (chapter, ind) => (
 
                                 <div
                                     key={
-                                        chapter._id
+                                        ind
                                     }
                                     className="
                                         border
@@ -337,7 +337,6 @@ const ClassTenth = () => {
                                         overflow-hidden
                                     "
                                 >
-
                                     <button
                                         onClick={() =>
                                             setSelectedChapter(
@@ -457,11 +456,11 @@ const ClassTenth = () => {
                                 selectedChapter.problems ||
                                 []
                             ).map(
-                                (problem) => (
+                                (problem, ind) => (
 
                                     <button
                                         key={
-                                            problem._id
+                                            ind
                                         }
                                         onClick={() =>
                                             openProblem(
@@ -477,7 +476,6 @@ const ClassTenth = () => {
                                             transition
                                         "
                                     >
-
                                         <div className="
                                             flex
                                             justify-between

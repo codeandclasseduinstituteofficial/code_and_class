@@ -138,12 +138,6 @@ const Intermediate = () => {
 
     const openTopic = (topic) => {
 
-        console.log(
-            "Opening Intermediate topic:",
-            topic
-        );
-
-
         if (!topic.videoId) {
 
             console.error(

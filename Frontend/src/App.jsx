@@ -66,6 +66,8 @@ import ManageClassTen from './Pages/admin/ManageClassTen';
 import TopicVideo from './Pages/TopicVideo';
 import BuyVideo from './Pages/BuyVideo';
 import AdminAddLecutres from './Pages/admin/lectures/AdminAddLecutres'
+import ManageQuizzes from './Pages/admin/ManageQuizzes';
+import BuyQuiz from './Pages/BuyQuiz';
 
 const App = () => {
   return (
@@ -132,6 +134,15 @@ const App = () => {
             element={
               <PrivateRoute roles={['admin']}>
                 <Orders />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/manage-quizzes"
+            element={
+              <PrivateRoute roles={['admin']}>
+                <ManageQuizzes />
               </PrivateRoute>
             }
           />
@@ -310,6 +321,15 @@ const App = () => {
             element={
               <PrivateRoute roles={['admin']}>
                 <AddUsers />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/buy-quiz/:id"
+            element={
+              <PrivateRoute>
+                <BuyQuiz />
               </PrivateRoute>
             }
           />

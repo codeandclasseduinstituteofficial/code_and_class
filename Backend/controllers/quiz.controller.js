@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import Quiz from '../models/quiz.model.js';
 import QuizAttempt from '../models/quizAttempt.model.js';
 import Enrollment from '../models/enrollment.model.js';
+import Purchase from '../models/Purchase.model.js';
 
 // ---------- Admin ----------
 
@@ -42,21 +43,14 @@ export const getQuizForAdmin = asyncHandler(async (req, res) => {
   res.json(quiz);
 });
 
-// ---------- Public / Student ----------
-
-// @desc  List all published quizzes (free ones for everyone, course quizzes flagged as locked/unlocked)
-// @route GET /api/quizzes
-// @access Public (more info shown if logged in)
-export const getQuizzes = asyncHandler(async (req, res) => {
-  const quizzes = await Quiz.find({ isPublished: true })
-    .select('title description course timeLimitMinutes questions')
-    .populate('course', 'title course');
-
-  let unlockedCourseIds = [];
-  if (req.user) {
-    const enrollments = await Enrollment.find({ user: req.user.id }).select('course');
-    unlockedCourseIds = enrollments.map((e) => e.course.toString());
-  }
+// @desc  Admin: list every quiz (published or not) for the manage-quizzes screen
+// @route GET /api/quizzes/admin/all
+// @access Private/Admin
+export const getAllQuizzesAdmin = asyncHandler(async (req, res) => {
+  const quizzes = await Quiz.find()
+    .select('title description course timeLimitMinutes questions isPublished isSpecial isPaid price createdAt')
+    .populate('course', 'title')
+    .sort({ isSpecial: -1, createdAt: -1 });
 
   const shaped = quizzes.map((q) => ({
     _id: q._id,
@@ -65,9 +59,62 @@ export const getQuizzes = asyncHandler(async (req, res) => {
     course: q.course,
     timeLimitMinutes: q.timeLimitMinutes,
     questionCount: q.questions.length,
-    isFree: !q.course,
-    isLocked: q.course ? !unlockedCourseIds.includes(q.course._id.toString()) : false,
+    isPublished: q.isPublished,
+    isSpecial: q.isSpecial,
+    isPaid: q.isPaid,
+    price: q.price,
+    createdAt: q.createdAt,
   }));
+
+  res.json(shaped);
+});
+
+// ---------- Public / Student ----------
+
+// @desc  List all published quizzes (free ones for everyone, course quizzes flagged as locked/unlocked)
+// @route GET /api/quizzes
+// @access Public (more info shown if logged in)
+export const getQuizzes = asyncHandler(async (req, res) => {
+  // Special quizzes are pinned first, then newest first.
+  const quizzes = await Quiz.find({ isPublished: true })
+    .select('title description course timeLimitMinutes questions isSpecial isPaid price createdAt')
+    .populate('course', 'title course')
+    .sort({ isSpecial: -1, createdAt: -1 });
+
+  let unlockedCourseIds = [];
+  let purchasedQuizIds = [];
+  if (req.user) {
+    const enrollments = await Enrollment.find({ user: req.user.id }).select('course');
+    unlockedCourseIds = enrollments.map((e) => e.course.toString());
+
+    const purchases = await Purchase.find({
+      user: req.user.id,
+      contentType: 'Quiz',
+      paymentStatus: 'success',
+    }).select('contentId');
+    purchasedQuizIds = purchases.map((p) => p.contentId);
+  }
+
+  const shaped = quizzes.map((q) => {
+    const courseLocked = q.course ? !unlockedCourseIds.includes(q.course._id.toString()) : false;
+    const paymentLocked = q.isPaid ? !purchasedQuizIds.includes(q._id.toString()) : false;
+
+    return {
+      _id: q._id,
+      title: q.title,
+      description: q.description,
+      course: q.course,
+      timeLimitMinutes: q.timeLimitMinutes,
+      questionCount: q.questions.length,
+      isFree: !q.course && !q.isPaid,
+      isSpecial: q.isSpecial,
+      isPaid: q.isPaid,
+      price: q.price,
+      courseLocked,
+      paymentLocked,
+      isLocked: courseLocked || paymentLocked,
+    };
+  });
 
   res.json(shaped);
 });
@@ -91,6 +138,31 @@ export const getQuizToAttempt = asyncHandler(async (req, res) => {
     if (!enrolled) {
       res.status(403);
       throw new Error('Enroll in this course to attempt the quiz');
+    }
+  }
+
+  if (quiz.isPaid) {
+    if (!req.user) {
+      return res.status(401).json({
+        message: 'Please log in to attempt this quiz',
+        requiresLogin: true,
+        quiz: { _id: quiz._id, title: quiz.title, price: quiz.price },
+      });
+    }
+    const purchased = await Purchase.findOne({
+      user: req.user.id,
+      contentId: quiz._id.toString(),
+      contentType: 'Quiz',
+      paymentStatus: 'success',
+    });
+    if (!purchased) {
+      // Structured JSON (not just a thrown Error) so the buy-quiz page can
+      // show the quiz's title/price before the student has paid for it.
+      return res.status(402).json({
+        message: 'Please purchase this quiz before attempting it',
+        requiresPayment: true,
+        quiz: { _id: quiz._id, title: quiz.title, price: quiz.price },
+      });
     }
   }
 
@@ -126,6 +198,19 @@ export const submitQuiz = asyncHandler(async (req, res) => {
     if (!enrolled) {
       res.status(403);
       throw new Error('Enroll in this course to attempt the quiz');
+    }
+  }
+
+  if (quiz.isPaid) {
+    const purchased = await Purchase.findOne({
+      user: req.user.id,
+      contentId: quiz._id.toString(),
+      contentType: 'Quiz',
+      paymentStatus: 'success',
+    });
+    if (!purchased) {
+      res.status(402);
+      throw new Error('Please purchase this quiz before attempting it');
     }
   }
 

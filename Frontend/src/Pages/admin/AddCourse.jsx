@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { authAxios } from '../../utils/authAxios';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../../context/AuthProvider';
 
 const AddCourse = () => {
     const [course, setCourse] = useState('');
