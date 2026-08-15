@@ -94,13 +94,6 @@ const TopicVideo = () => {
                         id
                     )}`;
 
-
-                console.log(
-                    "Loading video:",
-                    videoUrl
-                );
-
-
                 const res =
                     await fetch(
                         videoUrl

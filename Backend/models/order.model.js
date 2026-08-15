@@ -16,7 +16,7 @@ const orderSchema = new mongoose.Schema(
 
     // Used when itemType === 'topic' (Class 10 problem or Intermediate topic video)
     contentId: { type: String },
-    contentType: { type: String, enum: ['Class10', 'Intermediate'] },
+    contentType: { type: String, enum: ['Class10', 'Intermediate', 'Quiz'] },
 
     // Amount stored in paise (smallest currency unit) to match Razorpay convention
     amount: { type: Number, required: true },

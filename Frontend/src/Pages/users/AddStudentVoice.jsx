@@ -61,8 +61,6 @@ const AddStudentVoice = () => {
                 formData
             );
 
-            console.log("Student Voice Response:", response.data);
-
             toast.success("Student Voice Submitted Successfully!");
 
             // reset form after successful submit

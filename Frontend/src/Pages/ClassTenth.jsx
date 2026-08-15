@@ -102,12 +102,6 @@ const ClassTenth = () => {
         problem
     ) => {
 
-        console.log(
-            "Opening problem:",
-            problem
-        );
-
-
         if (!problem.videoId) {
 
             console.error(

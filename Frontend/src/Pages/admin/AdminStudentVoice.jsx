@@ -328,8 +328,6 @@ const AdminStudentVoice = () => {
 
 
                                     <td className="p-4">
-                                        {console.log(voice?.approved)}
-
                                         {
                                             voice?.approved === true
                                                 ?

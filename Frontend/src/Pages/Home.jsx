@@ -106,7 +106,6 @@ const tuitionPrograms = [
 ];
 
 const handleEnquireNow = (course) => {
-  console.log(course);
 
   // Example
   window.location.href = "/contact";

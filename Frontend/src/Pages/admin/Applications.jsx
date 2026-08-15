@@ -124,7 +124,6 @@ const Applications = () => {
                     <td className="px-5 py-3 text-slate-600">
                       {activeTab === 'course' && app.course}
                       {activeTab === 'toss' && app.tossLevel}
-                      {console.log(app)}
                       {activeTab === 'tuition' && (app.joiningDate ? new Date(app.joiningDate).toLocaleDateString('en-IN') : '—')}
                     </td>
                     <td className="px-5 py-3">
