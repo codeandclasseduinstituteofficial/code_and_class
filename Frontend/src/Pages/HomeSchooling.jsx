@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
     FaYoutube,
@@ -17,80 +18,39 @@ import {
     FaComments,
     FaPlayCircle,
     FaChevronDown,
+    FaTimes,
 } from "react-icons/fa";
 import axios from "axios";
-
-
-// const videos = [
-//     {
-//         title: "Alphabet & Phonics",
-//         age: "3+ Years",
-//         thumbnail:
-//             "https://img.youtube.com/vi/HCU2Dh_M0Dk/maxresdefault.jpg",
-//         youtube: "https://youtu.be/HCU2Dh_M0Dk",
-//     },
-//     {
-//         title: "Numbers Shapes & Colours",
-//         age: "3 - 4 Years",
-//         thumbnail:
-//             "https://img.youtube.com/vi/MyJCgW9sauA/maxresdefault.jpg",
-//         youtube: "https://youtu.be/MyJCgW9sauA",
-//     },
-//     {
-//         title: "Rhymes & Story Learning",
-//         age: "4+ Years",
-//         thumbnail:
-//             "https://img.youtube.com/vi/1E0fQlLHzHA/maxresdefault.jpg",
-//         youtube: "https://youtu.be/1E0fQlLHzHA",
-//     },
-// ];
-
+import { AuthContext } from "../context/AuthProvider";
 
 const curriculum = [
     {
         icon: <FaBookOpen />,
         title: "English & Phonics",
-        items: [
-            "Alphabet recognition",
-            "Letter sounds",
-            "Early reading skills",
-        ],
+        items: ["Alphabet recognition", "Letter sounds", "Early reading skills"],
         color: "blue",
     },
     {
         icon: <FaCalculator />,
         title: "Math Foundations",
-        items: [
-            "Numbers",
-            "Shapes",
-            "Counting",
-        ],
+        items: ["Numbers", "Shapes", "Counting"],
         color: "purple",
     },
     {
         icon: <FaPalette />,
         title: "Creative Learning",
-        items: [
-            "Drawing",
-            "Craft activities",
-            "Creative thinking",
-        ],
+        items: ["Drawing", "Craft activities", "Creative thinking"],
         color: "orange",
     },
     {
         icon: <FaComments />,
         title: "Communication",
-        items: [
-            "Stories",
-            "Rhymes",
-            "Speaking confidence",
-        ],
+        items: ["Stories", "Rhymes", "Speaking confidence"],
         color: "green",
     },
 ];
 
-const API = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}`
-
+const API = `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}`;
 
 const faqs = [
     {
@@ -135,13 +95,25 @@ const faqs = [
     },
 ];
 
+// Pulls the 11-character YouTube video ID out of a youtu.be or
+// youtube.com/watch URL so we can build an embeddable player URL.
+const getYouTubeId = (url) => {
+    if (!url) return null;
+    const match = url.match(
+        /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
+    );
+    return match ? match[1] : null;
+};
 
 const HomeSchooling = () => {
+    const navigate = useNavigate();
+    const { accessToken, user } = useContext(AuthContext);
 
     const [videos, setVideos] = useState([]);
     const [openFaq, setOpenFaq] = useState(null);
-    const [teachers, setTeachers] = useState([])
+    const [teachers, setTeachers] = useState([]);
     const [testimonials, setTestimonials] = useState([]);
+    const [activeVideo, setActiveVideo] = useState(null);
 
     useEffect(() => {
         const fetchVideos = async () => {
@@ -164,10 +136,7 @@ const HomeSchooling = () => {
 
         const fetchStudentVoices = async () => {
             try {
-                const { data } = await axios.get(
-                    `${API}/studentVoice/get-homeschooling-voices`
-                );
-
+                const { data } = await axios.get(`${API}/studentVoice/get-homeschooling-voices`);
                 setTestimonials(data.voices || []);
             } catch (error) {
                 console.log("Student voice error", error);
@@ -178,6 +147,26 @@ const HomeSchooling = () => {
         fetchSupporters();
         fetchStudentVoices();
     }, []);
+
+    // Auth gate: if logged in, go straight to the application form.
+    // Otherwise, send to login and remember where they wanted to go.
+    const handleApplyClick = () => {
+        if (accessToken && user) {
+            navigate("/homeschooling/apply");
+        } else {
+            navigate("/login", { state: { from: "/homeschooling/apply" } });
+        }
+    };
+
+    // Close the video modal on Escape
+    useEffect(() => {
+        if (!activeVideo) return;
+        const onKeyDown = (e) => {
+            if (e.key === "Escape") setActiveVideo(null);
+        };
+        window.addEventListener("keydown", onKeyDown);
+        return () => window.removeEventListener("keydown", onKeyDown);
+    }, [activeVideo]);
 
     return (
         <div className="bg-slate-50 min-h-screen overflow-hidden">
@@ -238,7 +227,9 @@ text-blue-100
 flex flex-wrap gap-4 mt-8
 ">
 
-                                <a
+                                <button
+                                    type="button"
+                                    onClick={handleApplyClick}
                                     className="
 bg-green-500
 text-white
@@ -254,7 +245,7 @@ shadow-lg
 "
                                 >
                                     🎓 Login & Fill Application Form
-                                </a>
+                                </button>
 
 
                                 <a
@@ -1010,7 +1001,10 @@ lg:px-10
         "
                             >
 
-                                <div className="relative">
+                                <div
+                                    className="relative cursor-pointer group"
+                                    onClick={() => setActiveVideo(video)}
+                                >
 
 
                                     <img
@@ -1031,12 +1025,16 @@ lg:px-10
                 items-center
                 justify-center
                 bg-black/30
+                group-hover:bg-black/45
+                transition
                 ">
 
                                         <FaPlayCircle
                                             className="
                     text-white
                     text-6xl
+                    group-hover:scale-110
+                    transition
                     "
                                         />
 
@@ -1079,7 +1077,7 @@ font-semibold
 
 
                                     <a
-                                        href={video.youtube}
+                                        href={video.videoLink}
                                         target="_blank"
                                         rel="noreferrer"
                                         className="
@@ -1179,6 +1177,55 @@ mt-3
 
                 </div>
             </section>
+
+            {/* INLINE VIDEO MODAL */}
+            {activeVideo && (
+                <div
+                    className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4"
+                    onClick={() => setActiveVideo(null)}
+                >
+                    <div
+                        className="relative w-full max-w-3xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setActiveVideo(null)}
+                            aria-label="Close video"
+                            className="absolute -top-12 right-0 text-white text-3xl hover:text-yellow-300 transition"
+                        >
+                            <FaTimes />
+                        </button>
+
+                        <div className="aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                            {getYouTubeId(activeVideo.videoLink) ? (
+                                <iframe
+                                    className="w-full h-full"
+                                    src={`https://www.youtube.com/embed/${getYouTubeId(
+                                        activeVideo.videoLink
+                                    )}?autoplay=1`}
+                                    title={activeVideo.title}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-slate-900 flex items-center justify-center text-white p-6 text-center">
+                                    Couldn't load this video. You can watch it directly on{" "}
+                                    <a
+                                        href={activeVideo.videoLink}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="underline ml-1"
+                                    >
+                                        YouTube
+                                    </a>
+                                    .
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <section
                 id="teachers"
@@ -1364,8 +1411,9 @@ text-slate-700
                     </div>
 
 
-                    <a
-                        href="#"
+                    <button
+                        type="button"
+                        onClick={handleApplyClick}
                         className="
 bg-blue-700
 text-white
@@ -1378,7 +1426,7 @@ transition
 "
                     >
                         Login & Apply Now →
-                    </a>
+                    </button>
 
 
                 </div>

@@ -28,6 +28,7 @@ import successStoryRoutes from './routes/successStoryRoutes.js'
 import studentVoiceRoutes from './routes/studentVoiceRoutes.js'
 import supportersRoutes from './routes/supporter.routes.js'
 import homeSchoolingRoutes from './routes/homeSchoolingRoutes.js'
+import homeSchoolingApplicationRoutes from "./routes/homeschoolingapplication.routes.js";
 import classTenthRoutes from './routes/classTenth.routes.js'
 import intermediateRoutes from './routes/intermediate.route.js'
 import videoRoutes from './routes/video.routes.js'
@@ -107,6 +108,7 @@ app.use('/api/successStories', successStoryRoutes)
 app.use('/api/studentVoice', studentVoiceRoutes)
 app.use('/api/supporters', supportersRoutes)
 app.use('/api/homeSchooling', homeSchoolingRoutes)
+app.use('/api/homeSchoolingApplication', homeSchoolingApplicationRoutes)
 app.use('/api/classTenth', classTenthRoutes)
 app.use('/api/intermediate', intermediateRoutes)
 app.use('/api/video', videoRoutes)

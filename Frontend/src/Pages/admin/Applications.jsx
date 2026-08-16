@@ -8,7 +8,16 @@ const TABS = [
   { key: 'course', label: 'Course Applications', endpoint: '/courseApplication' },
   { key: 'tuition', label: 'Tuition Applications', endpoint: '/tutionForm' },
   { key: 'toss', label: 'TOSS Applications', endpoint: '/tossApplication' },
+  { key: 'homeschooling', label: 'Home Schooling Applications', endpoint: '/homeSchoolingApplication' },
 ];
+
+// Label for the tab-specific third column header
+const THIRD_COLUMN_LABEL = {
+  course: 'Course',
+  toss: 'TOSS Level',
+  tuition: 'Joining Date',
+  homeschooling: 'Batch Timing',
+};
 
 const Applications = () => {
   const { accessToken } = useContext(AuthContext);
@@ -79,11 +88,10 @@ const Applications = () => {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                activeTab === tab.key
+              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${activeTab === tab.key
                   ? 'bg-brand-600 text-white shadow-md'
                   : 'bg-white text-slate-600 border border-slate-200 hover:border-brand-300'
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -99,11 +107,11 @@ const Applications = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-left text-slate-500">
-                  <th className="px-5 py-3 font-semibold">Student</th>
-                  <th className="px-5 py-3 font-semibold">Contact</th>
                   <th className="px-5 py-3 font-semibold">
-                    {activeTab === 'course' ? 'Course' : activeTab === 'toss' ? 'TOSS Level' : 'Joining Date'}
+                    {activeTab === 'homeschooling' ? 'Child' : 'Student'}
                   </th>
+                  <th className="px-5 py-3 font-semibold">Contact</th>
+                  <th className="px-5 py-3 font-semibold">{THIRD_COLUMN_LABEL[activeTab]}</th>
                   <th className="px-5 py-3 font-semibold">Payment Mode</th>
                   <th className="px-5 py-3 font-semibold">Payment Status</th>
                   <th className="px-5 py-3 font-semibold">Submitted</th>
@@ -114,8 +122,19 @@ const Applications = () => {
                 {applications.map((app) => (
                   <tr key={app._id} className="border-b border-slate-100 last:border-0">
                     <td className="px-5 py-3">
-                      <p className="font-medium text-slate-800">{app.salutation} {app.studentName}</p>
-                      <p className="text-xs text-slate-400">{app.category}</p>
+                      {activeTab === 'homeschooling' ? (
+                        <>
+                          <p className="font-medium text-slate-800">{app.childName}</p>
+                          <p className="text-xs text-slate-400">
+                            Parent: {app.salutation} {app.parentName}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="font-medium text-slate-800">{app.salutation} {app.studentName}</p>
+                          <p className="text-xs text-slate-400">{app.category}</p>
+                        </>
+                      )}
                     </td>
                     <td className="px-5 py-3 text-slate-600">
                       <p>{app.mobileNumber}</p>
@@ -125,6 +144,7 @@ const Applications = () => {
                       {activeTab === 'course' && app.course}
                       {activeTab === 'toss' && app.tossLevel}
                       {activeTab === 'tuition' && (app.joiningDate ? new Date(app.joiningDate).toLocaleDateString('en-IN') : '—')}
+                      {activeTab === 'homeschooling' && (app.preferredBatchTiming || '—')}
                     </td>
                     <td className="px-5 py-3">
                       <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600">

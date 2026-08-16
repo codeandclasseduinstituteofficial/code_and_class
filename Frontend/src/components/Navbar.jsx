@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { FaBars, FaTimes, FaChevronDown } from 'react-icons/fa';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthProvider';
 import Logo from '../assets/Logo.png';
 
@@ -8,6 +8,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isClassesOpen, setIsClassesOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileClassesOpen, setMobileClassesOpen] = useState(false);
 
   const { accessToken, user } = useContext(AuthContext);
@@ -24,6 +25,15 @@ const Navbar = () => {
 
   const navLink =
     'text-sm font-medium px-3 py-2 rounded-lg hover:bg-slate-100 hover:text-brand-600 transition-colors';
+
+  // Gatekeeper for Quizzes: only lets the user through if they're authenticated,
+  // otherwise sends them to /login (and remembers where they wanted to go).
+  const handleQuizzesClick = (e) => {
+    if (!(accessToken && user)) {
+      e.preventDefault();
+      navigate('/login', { state: { from: '/quizzes' } });
+    }
+  };
 
   return (
     <div className="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 fixed top-0 left-0 z-30">
@@ -65,9 +75,15 @@ const Navbar = () => {
           <Link to="/spoken-english" className={`${navLink} ${isActive('/spoken-english')}`}>Spoken English</Link>
 
           <Link to="/blogs" className={`${navLink} ${isActive('/blogs')}`}>Blogs</Link>
-          {accessToken && user && (
-            <Link to="/quizzes" className={`${navLink} ${isActive('/quizzes')}`}>Quizzes</Link>
-          )}
+
+          <Link
+            to="/quizzes"
+            onClick={handleQuizzesClick}
+            className={`${navLink} ${isActive('/quizzes')}`}
+          >
+            Quizzes
+          </Link>
+
           <Link to="/exams" className={`${navLink} ${isActive('/exams')}`}>Exams</Link>
           <Link to="/gallery" className={`${navLink} ${isActive('/gallery')}`}>Gallery</Link>
           <Link to="/contact" className={`${navLink} ${isActive('/contact')}`}>Contact</Link>
@@ -165,15 +181,16 @@ const Navbar = () => {
               Blogs
             </Link>
 
-            {accessToken && user && (
-              <Link
-                to="/quizzes"
-                onClick={() => setIsOpen(false)}
-                className={navLink}
-              >
-                Quizzes
-              </Link>
-            )}
+            <Link
+              to="/quizzes"
+              onClick={(e) => {
+                handleQuizzesClick(e);
+                setIsOpen(false);
+              }}
+              className={navLink}
+            >
+              Quizzes
+            </Link>
 
             <Link
               to="/exams"

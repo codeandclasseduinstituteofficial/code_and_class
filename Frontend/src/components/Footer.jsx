@@ -1,9 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { FaInstagram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import { SiGmail } from "react-icons/si";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthProvider';
 
 const Footer = () => {
+  const navigate = useNavigate();
+  const { accessToken, user } = useContext(AuthContext);
+
+  // Same gatekeeper used in the Navbar: only lets the user through to
+  // Quizzes if they're authenticated, otherwise redirects to /login.
+  const handleQuizzesClick = (e) => {
+    if (!(accessToken && user)) {
+      e.preventDefault();
+      navigate('/login', { state: { from: '/quizzes' } });
+    }
+  };
+
   return (
     <footer className="bg-slate-900 relative top-24 text-slate-300 px-4 md:px-10 lg:px-20 py-12 mt-10">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-8 max-w-6xl mx-auto">
@@ -21,10 +34,11 @@ const Footer = () => {
           <ul className="text-sm text-slate-400 space-y-2">
             <li><Link to="/" className="hover:text-white transition">Home</Link></li>
             <li><Link to="/courses" className="hover:text-white transition">Courses</Link></li>
-            <li><Link to="/quizzes" className="hover:text-white transition">Quizzes</Link></li>
+            <li><Link to="/quizzes" onClick={handleQuizzesClick} className="hover:text-white transition">Quizzes</Link></li>
             <li><Link to="/contact" className="hover:text-white transition">Contact Us</Link></li>
             <li><Link to="/certificate-verification" className="hover:text-white transition">Verify Certificate</Link></li>
-            <li><Link to="/notes" className="hover:text-white transition">Notes</Link></li>
+            {/* <li><Link to="/notes" className="hover:text-white transition">Notes</Link></li> */}
+            <li><Link to="/ngos" className="hover:text-white transition">Partner Ngo's</Link></li>
           </ul>
         </div>
 

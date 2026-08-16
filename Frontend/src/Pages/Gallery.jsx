@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Zoom } from "react-awesome-reveal";
+import { FaDownload } from "react-icons/fa";
 
 const Gallery = () => {
     const [images, setImages] = useState([]);
@@ -10,8 +11,41 @@ const Gallery = () => {
     const [eventCount, setEventCount] = useState(0);
     const [studentCount, setStudentCount] = useState(0);
 
+    // Tracks which card's overlay is "open" on tap (mobile has no :hover)
+    const [activeIndex, setActiveIndex] = useState(null);
+    const [downloadingIndex, setDownloadingIndex] = useState(null);
+
     const statsRef = useRef(null);
     const hasAnimated = useRef(false);
+
+    // ---- Google Drive URL helpers ---------------------------------------
+    // Drive "share" links (…/file/d/ID/view or …/open?id=ID) don't work
+    // directly as an <img src>. We pull the file ID out and rebuild a URL
+    // that Drive will actually render as an image / serve as a download.
+    const getDriveFileId = (url) => {
+        if (!url) return null;
+        const match =
+            url.match(/\/d\/([a-zA-Z0-9_-]+)/) ||       // .../file/d/ID/view
+            url.match(/[?&]id=([a-zA-Z0-9_-]+)/);        // .../open?id=ID or ?id=ID
+        return match ? match[1] : null;
+    };
+
+    const getDisplayUrl = (url) => {
+        if (!url) return url;
+        if (!url.includes("drive.google.com")) return url;
+        const fileId = getDriveFileId(url);
+        if (!fileId) return url;
+        // Drive's thumbnail endpoint is the most reliable one for <img> tags
+        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+    };
+
+    const getDownloadUrl = (url) => {
+        if (!url) return url;
+        if (!url.includes("drive.google.com")) return url;
+        const fileId = getDriveFileId(url);
+        if (!fileId) return url;
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    };
 
     // Fetch gallery images
     useEffect(() => {
@@ -77,6 +111,41 @@ const Gallery = () => {
 
         return () => observer.disconnect();
     }, [images]);
+
+    // Download handler: tries a same-origin/CORS-friendly fetch->blob first
+    // (gives a clean forced download), and falls back to just opening the
+    // direct download URL (works for Drive, which blocks cross-origin fetch).
+    const handleDownload = async (e, img, index) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        const downloadUrl = getDownloadUrl(img.imageUrl);
+        setDownloadingIndex(index);
+
+        try {
+            const response = await fetch(downloadUrl, { mode: "cors" });
+            if (!response.ok) throw new Error("Network response was not ok");
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = `code-and-class-gallery-${index + 1}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+            console.error("Direct download failed, opening image instead:", err);
+            window.open(downloadUrl, "_blank", "noopener,noreferrer");
+        } finally {
+            setDownloadingIndex(null);
+        }
+    };
+
+    const toggleActive = (index) => {
+        setActiveIndex((prev) => (prev === index ? null : index));
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white relative top-16">
@@ -158,38 +227,64 @@ const Gallery = () => {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-                        {images.map((img, index) => (
-                            <Zoom key={index} triggerOnce>
+                        {images.map((img, index) => {
+                            const displayUrl = getDisplayUrl(img.imageUrl);
+                            const isActive = activeIndex === index;
+                            const isDownloading = downloadingIndex === index;
 
-                                <div className="group relative overflow-hidden rounded-3xl shadow-xl bg-white cursor-pointer">
+                            return (
+                                <Zoom key={index} triggerOnce>
 
-                                    <img
-                                        src={img.imageUrl}
-                                        alt={`Gallery ${index + 1}`}
-                                        loading="lazy"
-                                        className="w-full h-80 object-cover transition-all duration-700 group-hover:scale-110"
-                                    />
+                                    <div
+                                        className="group relative overflow-hidden rounded-3xl shadow-xl bg-white cursor-pointer"
+                                        onClick={() => toggleActive(index)}
+                                    >
 
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end">
+                                        <img
+                                            src={displayUrl}
+                                            alt={`Gallery ${index + 1}`}
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer"
+                                            className="w-full h-80 object-cover transition-all duration-700 group-hover:scale-110"
+                                        />
 
-                                        <div className="p-6 text-white">
+                                        <div
+                                            className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-all duration-500 flex items-end justify-between
+                                                ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                                        >
 
-                                            <h3 className="text-xl font-bold">
-                                                Code and Class
-                                            </h3>
+                                            <div className="p-6 text-white">
 
-                                            <p className="text-sm text-slate-200 mt-1">
-                                                Learning • Innovation • Success
-                                            </p>
+                                                <h3 className="text-xl font-bold">
+                                                    Code and Class
+                                                </h3>
+
+                                                <p className="text-sm text-slate-200 mt-1">
+                                                    Learning • Innovation • Success
+                                                </p>
+
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={(e) => handleDownload(e, img, index)}
+                                                disabled={isDownloading}
+                                                aria-label="Download image"
+                                                className="m-4 flex items-center gap-2 bg-white/90 hover:bg-white text-slate-900 text-sm font-semibold px-3 py-2 rounded-full shadow-lg transition-all disabled:opacity-60"
+                                            >
+                                                <FaDownload className={isDownloading ? "animate-bounce" : ""} />
+                                                <span className="hidden sm:inline">
+                                                    {isDownloading ? "Downloading..." : "Download"}
+                                                </span>
+                                            </button>
 
                                         </div>
 
                                     </div>
 
-                                </div>
-
-                            </Zoom>
-                        ))}
+                                </Zoom>
+                            );
+                        })}
 
                     </div>
                 )}

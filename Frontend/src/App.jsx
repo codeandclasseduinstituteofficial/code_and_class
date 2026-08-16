@@ -68,6 +68,7 @@ import BuyVideo from './Pages/BuyVideo';
 import AdminAddLecutres from './Pages/admin/lectures/AdminAddLecutres'
 import ManageQuizzes from './Pages/admin/ManageQuizzes';
 import BuyQuiz from './Pages/BuyQuiz';
+import HomeSchoolingApplicationForm from './Pages/homeSchoolingApplicationForm';
 
 const App = () => {
   return (
@@ -183,6 +184,15 @@ const App = () => {
             element={
               <PrivateRoute roles={['user']}>
                 <CourseApplication />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/homeschooling/apply"
+            element={
+              <PrivateRoute roles={['user']}>
+                <HomeSchoolingApplicationForm />
               </PrivateRoute>
             }
           />
