@@ -12,7 +12,8 @@ export const getCertificates = asyncHandler(async (req, res) => {
 });
 
 export const getCertificateByNumber = asyncHandler(async (req, res) => {
-    const cert = await Certificate.findOne({ certificate_no: req.params.certificate_no });
+    const realCertNo = req.params.certificate_no.replace(/-/g, '/');
+    const cert = await Certificate.findOne({ certificate_no: realCertNo });
     if (!cert) {
         res.status(404);
         throw new Error('Certificate not found');
@@ -21,13 +22,15 @@ export const getCertificateByNumber = asyncHandler(async (req, res) => {
 });
 
 export const getCertificateById = asyncHandler(async (req, res) => {
-    const cert = await Certificate.findOne({ certificate_no: req.params.certificate_no });
+    const realCertNo = req.params.certificate_no.replace(/-/g, '/');
+    const cert = await Certificate.findOne({ certificate_no: realCertNo });
+
     if (!cert) {
         res.status(404);
         throw new Error('Certificate not found');
     }
     if (cert.status === 'Pending' || cert.status === 'Rejected') {
-        res.status(403); // 403 Forbidden is more appropriate than 404
+        res.status(403);
         throw new Error('Course not Completed Yet!');
     }
 

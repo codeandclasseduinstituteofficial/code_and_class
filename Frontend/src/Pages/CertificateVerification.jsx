@@ -17,11 +17,15 @@ const CertificateVerification = () => {
     setLoading(true);
     setError("");
 
+    // Accept "CCEI/2026/1234" or "CCEI-2026-1234" — normalize both to dash form
+    const normalizedId = certNumber
+      .trim()
+      .toUpperCase()
+      .replace(/\//g, '-'); // turn any slashes into dashes too
+
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/certificates/${encodeURIComponent(
-          certNumber.toUpperCase()
-        )}`
+        `${import.meta.env.VITE_API_URL || "https://code-and-class.onrender.com/api"}/certificates/${normalizedId}`
       );
 
       if (!response.ok) {
@@ -29,7 +33,6 @@ const CertificateVerification = () => {
       }
 
       const data = await response.json();
-
       setHasSearched(true);
 
       if (data && data.name) {
@@ -180,7 +183,7 @@ const CertificateVerification = () => {
               </div>
 
               {isVerified && (
-                <Link to={`/dashboard/certificate/${certDetails?.certificate_no}`}>
+                <Link to={`/dashboard/certificate/${certDetails?.certificate_no?.replace(/\//g, '-')}`}>
                   <button className="btn-primary w-full mt-2">Download Certificate PDF</button>
                 </Link>
               )}
