@@ -60,7 +60,7 @@ const sections = [
     heading: "Content & Partners",
     items: [
       { title: "Gallery", link: "/dashboard/edit-gallery", icon: <FaImages />, color: "from-fuchsia-500 to-pink-500" },
-      { title: "NGO Partners", link: "/dashboard/ngo-details", icon: <FaHandsHelping />, color: "from-lime-500 to-green-500", maintenance: true },
+      { title: "NGO Partners", link: "/dashboard/ngo-details", icon: <FaHandsHelping />, color: "from-lime-500 to-green-500"},
     ],
   },
   {
