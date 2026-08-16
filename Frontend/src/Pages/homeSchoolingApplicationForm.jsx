@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthProvider";
 import { authAxios } from "../utils/authAxios";
+import { AuthContext } from "../context/AuthProvider";
+
 
 // =====================================================
 // FIXED APPLICATION FEE
