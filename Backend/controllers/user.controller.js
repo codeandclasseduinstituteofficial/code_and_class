@@ -111,7 +111,11 @@ export const refreshToken = asyncHandler(async (req, res) => {
 
 // Logout
 export const logoutUser = asyncHandler(async (req, res) => {
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    });
     res.sendStatus(204);
 });
 
