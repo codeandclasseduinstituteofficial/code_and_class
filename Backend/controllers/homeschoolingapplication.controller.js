@@ -20,7 +20,7 @@ const formatValidationError = (err) => {
 // =====================================================
 
 export const createHomeSchoolingApplication = asyncHandler(async (req, res) => {
-    if (!req.user?._id) {
+    if (!req.user?.id) {
         res.status(401);
         throw new Error("User authentication required.");
     }
@@ -90,7 +90,7 @@ export const createHomeSchoolingApplication = asyncHandler(async (req, res) => {
 
     try {
         const application = await HomeSchoolingApplication.create({
-            user: req.user._id,
+            user: req.user.id,
             salutation,
             parentName,
             relationToChild,
@@ -163,7 +163,7 @@ export const getHomeSchoolingApplicationById = asyncHandler(
         }
 
         const isOwner =
-            application.user?._id?.toString() === req.user?._id?.toString();
+            application.user?._id?.toString() === req.user?.id?.toString();
 
         const isAdmin = req.user?.role === "admin";
 
