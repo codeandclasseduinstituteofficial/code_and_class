@@ -15,11 +15,13 @@ import ClassTen from '../models/classTenth.model.js';
 import Intermediate from '../models/Intermediate.model.js';
 import Purchase from '../models/Purchase.model.js';
 import Quiz from '../models/quiz.model.js';
+import AbroadApplication from '../models/abroadApplication.model.js';
 
 const applicationModels = {
   course: CourseApplication,
   tuition: TutionForm,
   toss: TossApplication,
+  abroad: AbroadApplication,
 };
 
 // Built lazily (on first use, per request) rather than at module-import time.
@@ -395,7 +397,12 @@ export const createApplicationOrder = asyncHandler(async (req, res) => {
     throw new Error('Invalid application type');
   }
 
-  const application = await Model.findById(applicationId);
+  // const application = await Model.findById(applicationId);
+  const application = await Model.findOne({
+    _id: applicationId,
+    user: req.user.id,
+  });
+
   if (!application) {
     res.status(404);
     throw new Error('Application not found');
@@ -443,6 +450,11 @@ export const createApplicationOrder = asyncHandler(async (req, res) => {
     receipt: razorpayOrder.receipt,
     status: 'created',
   });
+
+  // Save the order reference on application
+  application.order = order._id;
+
+  await application.save();
 
   res.status(201).json({
     orderId: razorpayOrder.id,
@@ -508,15 +520,34 @@ export const verifyPayment = asyncHandler(async (req, res) => {
         chapterId: order.chapterId,
         order: order._id,
       });
-    } else if (order.itemType === 'application') {
+    } 
+    // else if (order.itemType === 'application') {
+    //   const Model = applicationModels[order.applicationType];
+    //   if (Model) {
+    //     await Model.findByIdAndUpdate(order.applicationId, {
+    //       paymentStatus: 'paid',
+    //       order: order._id,
+    //     });
+    //   }
+    // } 
+    else if (order.itemType === 'application') {
       const Model = applicationModels[order.applicationType];
+    
       if (Model) {
-        await Model.findByIdAndUpdate(order.applicationId, {
-          paymentStatus: 'paid',
-          order: order._id,
-        });
-      }
-    } else {
+        await Model.findByIdAndUpdate(
+          order.applicationId,
+          {
+            paymentStatus: 'paid',
+            order: order._id,
+            razorpayPaymentId: order.razorpayPaymentId,
+            paidAt: new Date(),
+          },
+          {
+            new: true,
+          }
+        );
+      }}
+    else {
       await Enrollment.create({
         user: order.user,
         course: order.course,

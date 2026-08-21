@@ -31,10 +31,10 @@ const EditUser = () => {
   };
 
   // Id Card
-  const handleIdcardClick = (user) => {
-    setEditingUser(user);
-    setFormData({ name: user.name, email: user.email, password: '' });
-  };
+  // const handleIdcardClick = (user) => {
+  //   setEditingUser(user);
+  //   setFormData({ name: user.name, email: user.email, password: '' });
+  // };
 
   // Cancel edit
   const cancelEdit = () => {
@@ -166,12 +166,12 @@ const EditUser = () => {
               >
                 Edit
               </button>
-              <button
+              {/* <button
                 onClick={() => handleIdcardClick(user)}
                 className="bg-green-600 hover:bg-green-500 text-white px-4 py-1 rounded-md text-sm"
               >
                 Edit
-              </button>
+              </button> */}
               <button
                 onClick={() => handleDelete(user._id)}
                 className="bg-red-600 hover:bg-red-500 text-white px-4 py-1 rounded-md text-sm"

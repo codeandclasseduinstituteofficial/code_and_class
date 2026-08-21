@@ -22,11 +22,34 @@ const Gallery = () => {
     // Drive "share" links (…/file/d/ID/view or …/open?id=ID) don't work
     // directly as an <img src>. We pull the file ID out and rebuild a URL
     // that Drive will actually render as an image / serve as a download.
+    // const getDriveFileId = (url) => {
+    //     if (!url) return null;
+    //     const match =
+    //         url.match(/\/d\/([a-zA-Z0-9_-]+)/) ||       // .../file/d/ID/view
+    //         url.match(/[?&]id=([a-zA-Z0-9_-]+)/);        // .../open?id=ID or ?id=ID
+    //     return match ? match[1] : null;
+    // };
+
+    // const getDisplayUrl = (url) => {
+    //     if (!url) return url;
+    //     if (!url.includes("drive.google.com")) return url;
+    //     const fileId = getDriveFileId(url);
+    //     if (!fileId) return url;
+    //     // Drive's thumbnail endpoint is the most reliable one for <img> tags
+    //     return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+    // };
+
     const getDriveFileId = (url) => {
         if (!url) return null;
         const match =
-            url.match(/\/d\/([a-zA-Z0-9_-]+)/) ||       // .../file/d/ID/view
-            url.match(/[?&]id=([a-zA-Z0-9_-]+)/);        // .../open?id=ID or ?id=ID
+            url.match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+            url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+    };
+
+    const getResourceKey = (url) => {
+        if (!url) return null;
+        const match = url.match(/resourcekey=([a-zA-Z0-9_-]+)/);
         return match ? match[1] : null;
     };
 
@@ -35,8 +58,10 @@ const Gallery = () => {
         if (!url.includes("drive.google.com")) return url;
         const fileId = getDriveFileId(url);
         if (!fileId) return url;
-        // Drive's thumbnail endpoint is the most reliable one for <img> tags
-        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+        const resourceKey = getResourceKey(url);
+        let thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+        if (resourceKey) thumbUrl += `&resourcekey=${resourceKey}`;
+        return thumbUrl;
     };
 
     const getDownloadUrl = (url) => {
@@ -240,11 +265,26 @@ const Gallery = () => {
                                         onClick={() => toggleActive(index)}
                                     >
 
+                                        {/* <img
+                                            src={displayUrl}
+                                            alt={`Gallery ${index + 1}`}
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer"
+                                            className="w-full h-80 object-cover transition-all duration-700 group-hover:scale-110"
+                                        /> */}
+
                                         <img
                                             src={displayUrl}
                                             alt={`Gallery ${index + 1}`}
                                             loading="lazy"
                                             referrerPolicy="no-referrer"
+                                            onError={(e) => {
+                                                const fileId = getDriveFileId(img.imageUrl);
+                                                if (fileId && !e.target.dataset.fallbackTried) {
+                                                    e.target.dataset.fallbackTried = "true";
+                                                    e.target.src = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+                                                }
+                                            }}
                                             className="w-full h-80 object-cover transition-all duration-700 group-hover:scale-110"
                                         />
 

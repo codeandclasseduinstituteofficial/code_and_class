@@ -12,6 +12,7 @@ import {
     FaSchool,
     FaUniversity,
     FaHouseUser,
+    FaGlobeAmericas,
 } from "react-icons/fa";
 import { AuthContext } from "../../context/AuthProvider";
 import instance from "../../utils/axios";
@@ -26,6 +27,7 @@ const dashboardLinks = [
     { title: "TOSS Application", link: "/toss-application", icon: FaFileAlt },
     { title: "Home Schooling Application", link: "/homeschooling/apply", icon: FaHouseUser },
     { title: "Add Student Voice", link: "/add-student-voice", icon: FaFileAlt },
+    { title: "Abroad Application", link: "/abroad", icon: FaGlobeAmericas },
 ];
 
 const UsersDashboard = () => {

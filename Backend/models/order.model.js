@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema(
     note: { type: mongoose.Schema.Types.ObjectId, ref: 'Note' },
     lecture: { type: mongoose.Schema.Types.ObjectId, ref: 'Lecture' },
     chapterId: { type: mongoose.Schema.Types.ObjectId },
-    applicationType: { type: String, enum: ['course', 'tuition', 'toss'] },
+    applicationType: { type: String, enum: ['course', 'tuition', 'toss', 'abroad'] },
     applicationId: { type: mongoose.Schema.Types.ObjectId },
 
     // Used when itemType === 'topic' (Class 10 problem or Intermediate topic video)

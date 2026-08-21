@@ -76,6 +76,8 @@ const Navbar = () => {
 
           <Link to="/blogs" className={`${navLink} ${isActive('/blogs')}`}>Blogs</Link>
 
+          <Link to="/stationary" className={`${navLink} ${isActive('/stationary')}`}>Stationary</Link>
+
           <Link
             to="/quizzes"
             onClick={handleQuizzesClick}
@@ -86,6 +88,7 @@ const Navbar = () => {
 
           <Link to="/exams" className={`${navLink} ${isActive('/exams')}`}>Exams</Link>
           <Link to="/gallery" className={`${navLink} ${isActive('/gallery')}`}>Gallery</Link>
+          <Link to="/abroad" className={`${navLink} ${isActive('/abroad')}`}>Abroad</Link>
           <Link to="/contact" className={`${navLink} ${isActive('/contact')}`}>Contact</Link>
 
           {accessToken ? (
@@ -172,6 +175,14 @@ const Navbar = () => {
             <span>Spoken English</span>
           </Link>
 
+          <Link
+            to="/stationary"
+            onClick={() => setIsOpen(false)}
+            className={`${navLink} w-full flex justify-between items-center`}
+          >
+            <span>Stationary</span>
+          </Link>
+
           <div className='flex flex-col'>
             <Link
               to="/blogs"
@@ -206,6 +217,14 @@ const Navbar = () => {
               className={navLink}
             >
               Gallery
+            </Link>
+
+            <Link
+              to="/abroad"
+              onClick={() => setIsOpen(false)}
+              className={navLink}
+            >
+              Abroad
             </Link>
 
             <Link

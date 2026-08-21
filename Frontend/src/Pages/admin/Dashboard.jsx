@@ -18,6 +18,8 @@ import {
   FaSchool,
   FaPlusCircle,
   FaMoneyBillWave,
+  FaPaintBrush,
+  FaTruck,
 } from "react-icons/fa";
 import MaintenanceModal from "../../components/MaintenanceModal";
 
@@ -47,6 +49,13 @@ const sections = [
     ],
   },
   {
+    heading: "Stationery Store",
+    items: [
+      { title: "Add Stationery Product", link: "/dashboard/stationery-products", icon: <FaPaintBrush />, color: "from-amber-500 to-orange-600" },
+      { title: "Stationery Orders", link: "/dashboard/stationery-orders", icon: <FaTruck />, color: "from-rose-500 to-pink-600" },
+    ],
+  },
+  {
     heading: "Certificates & Students",
     items: [
       { title: "Certificates", link: "/dashboard/add-certificate", icon: <FaCertificate />, color: "from-indigo-500 to-blue-500" },
@@ -60,7 +69,7 @@ const sections = [
     heading: "Content & Partners",
     items: [
       { title: "Gallery", link: "/dashboard/edit-gallery", icon: <FaImages />, color: "from-fuchsia-500 to-pink-500" },
-      { title: "NGO Partners", link: "/dashboard/ngo-details", icon: <FaHandsHelping />, color: "from-lime-500 to-green-500"},
+      { title: "NGO Partners", link: "/dashboard/ngo-details", icon: <FaHandsHelping />, color: "from-lime-500 to-green-500" },
     ],
   },
   {

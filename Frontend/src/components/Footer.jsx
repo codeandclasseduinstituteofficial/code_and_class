@@ -35,6 +35,7 @@ const Footer = () => {
             <li><Link to="/" className="hover:text-white transition">Home</Link></li>
             <li><Link to="/courses" className="hover:text-white transition">Courses</Link></li>
             <li><Link to="/quizzes" onClick={handleQuizzesClick} className="hover:text-white transition">Quizzes</Link></li>
+            <li><Link to="/stationary" className="hover:text-white transition">Stationary</Link></li>
             <li><Link to="/contact" className="hover:text-white transition">Contact Us</Link></li>
             <li><Link to="/certificate-verification" className="hover:text-white transition">Verify Certificate</Link></li>
             {/* <li><Link to="/notes" className="hover:text-white transition">Notes</Link></li> */}

@@ -35,6 +35,10 @@ import videoRoutes from './routes/video.routes.js'
 import purchaseRoutes from './routes/purchase.routes.js'
 import progressRoutes from './routes/progress.routes.js'
 import searchRoutes from './routes/search.routes.js'
+import abroadApplicationRoutes from './routes/abroadApplication.routes.js'
+import stationeryProductRoutes from './routes/stationeryProduct.routes.js'
+import cartRoutes from './routes/cart.routes.js'
+import stationeryOrderRoutes from './routes/stationeryOrder.routes.js'
 
 const app = express();
 
@@ -85,8 +89,8 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/users', userRoutes);
-app.use('/api/lectures', lectureRoutes);
-app.use('/api/spoken-lectures', spokenLectureRoutes);
+// app.use('/api/lectures', lectureRoutes);
+// app.use('/api/spoken-lectures', spokenLectureRoutes);
 app.use('/api/spoken-english', spokenEnglishLevelRoutes);
 app.use('/api/meeting-links', meetingLinkRoutes);
 app.use('/api/fees', feeRoutes);
@@ -94,7 +98,7 @@ app.use('/api/exams', examRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/certificates', certificateRoutes);
-app.use('/api/notes', notesRoute);
+// app.use('/api/notes', notesRoute);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/ngos', ngoRoutes);
 app.use('/api/courseApplication', CourseApplication)
@@ -115,6 +119,10 @@ app.use('/api/video', videoRoutes)
 app.use('/api/purchase', purchaseRoutes)
 app.use('/api/progress', progressRoutes)
 app.use('/api/search', searchRoutes)
+app.use('/api/abroadapplication', abroadApplicationRoutes);
+app.use('/api/stationery-products', stationeryProductRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/stationery-orders', stationeryOrderRoutes);
 app.get('/api/health', async (req, res) => {
     try {
         res.status(200).json({

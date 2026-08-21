@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Img from "../assets/asifpic.jpeg";
 
@@ -19,6 +19,77 @@ import {
     FaWhatsapp,
 } from "react-icons/fa";
 import axios from "axios";
+
+// =====================================================
+// Google Drive URL helpers (same approach used on the
+// gallery pages). Drive "share" links don't work directly
+// as an <img src> — we pull the file ID (and resourcekey,
+// if present) out and build URLs Drive will actually render,
+// trying a few endpoints in order in case one is throttled.
+// =====================================================
+const getDriveFileId = (url) => {
+    if (!url) return null;
+    const match =
+        url.match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+        url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+};
+
+const getResourceKey = (url) => {
+    if (!url) return null;
+    const match = url.match(/resourcekey=([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+};
+
+const getImageUrlCandidates = (url, size = 600) => {
+    if (!url) return [url];
+    if (!url.includes("drive.google.com")) return [url];
+
+    const fileId = getDriveFileId(url);
+    if (!fileId) return [url];
+
+    const resourceKey = getResourceKey(url);
+    const rkParam = resourceKey ? `&resourcekey=${resourceKey}` : "";
+
+    return [
+        `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}${rkParam}`,
+        `https://lh3.googleusercontent.com/d/${fileId}=w${size}`,
+        `https://drive.google.com/uc?export=view&id=${fileId}`,
+    ];
+};
+
+// =====================================================
+// SmartImage: renders an <img> that walks through the
+// fallback URL candidates on error (handles Drive share
+// links transparently), stopping at a placeholder once
+// all candidates are exhausted.
+// =====================================================
+const SmartImage = ({ src, alt, size, className }) => {
+    const candidates = useMemo(() => getImageUrlCandidates(src, size), [src, size]);
+    const [attempt, setAttempt] = useState(0);
+
+    useEffect(() => {
+        setAttempt(0);
+    }, [src, size]);
+
+    const handleError = () => setAttempt((prev) => prev + 1);
+
+    const currentSrc =
+        attempt < candidates.length
+            ? candidates[attempt]
+            : "https://via.placeholder.com/400x400?text=Image+unavailable";
+
+    return (
+        <img
+            src={currentSrc}
+            alt={alt}
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={attempt < candidates.length ? handleError : undefined}
+            className={className}
+        />
+    );
+};
 
 const stats = [
     {
@@ -759,9 +830,10 @@ const AboutInstructor = () => {
 
                                 <div className="relative">
 
-                                    <img
+                                    <SmartImage
                                         src={member?.imgLink}
                                         alt={member?.name}
+                                        size={600}
                                         className="w-full h-80 object-cover group-hover:scale-105 transition duration-500"
                                     />
 

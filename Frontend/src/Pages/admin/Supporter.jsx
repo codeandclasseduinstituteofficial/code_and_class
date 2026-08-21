@@ -73,6 +73,32 @@ const Supporter = () => {
 
     };
 
+    // ---- Add near the top of the component (or in a shared utils file) ----
+    const getDriveFileId = (url) => {
+        if (!url) return null;
+        const match =
+            url.match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+            url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+    };
+
+    const getResourceKey = (url) => {
+        if (!url) return null;
+        const match = url.match(/resourcekey=([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+    };
+
+    const getDisplayUrl = (url) => {
+        if (!url) return url;
+        if (!url.includes("drive.google.com")) return url;
+        const fileId = getDriveFileId(url);
+        if (!fileId) return url;
+        const resourceKey = getResourceKey(url);
+        let thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+        if (resourceKey) thumbUrl += `&resourcekey=${resourceKey}`;
+        return thumbUrl;
+    };
+
 
     useEffect(() => {
 
@@ -513,14 +539,28 @@ const Supporter = () => {
                                                 supporter.imgLink ? (
 
 
+                                                    // <img
+
+                                                    //     src={supporter.imgLink}
+
+                                                    //     alt={supporter.name}
+
+                                                    //     className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+
+                                                    // />
+
                                                     <img
-
-                                                        src={supporter.imgLink}
-
+                                                        src={getDisplayUrl(supporter.imgLink)}
                                                         alt={supporter.name}
-
+                                                        referrerPolicy="no-referrer"
                                                         className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-
+                                                        onError={(e) => {
+                                                            const fileId = getDriveFileId(supporter.imgLink);
+                                                            if (fileId && !e.target.dataset.fallbackTried) {
+                                                                e.target.dataset.fallbackTried = "true";
+                                                                e.target.src = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+                                                            }
+                                                        }}
                                                     />
 
 
@@ -749,99 +789,128 @@ const Supporter = () => {
 
                             className="p-7 space-y-6"
 
+                            // onSubmit={async (e) => {
+
+                            //     e.preventDefault();
+
+
+
+                            //     if (
+                            //         !formData.imgLink ||
+                            //         !formData.name ||
+                            //         !formData.designation ||
+                            //         !formData.description
+                            //     ) {
+
+                            //         toast.error("Please fill all fields");
+
+                            //         return;
+
+                            //     }
+
+
+
+                            //     try {
+
+
+                            //         if (isEditing) {
+
+
+                            //             await api.put(
+
+                            //                 `${API}/${selectedId}`,
+
+                            //                 formData
+
+                            //             );
+
+
+                            //             toast.success(
+                            //                 "Supporter updated successfully"
+                            //             );
+
+
+
+                            //         } else {
+
+
+                            //             await api.post(
+
+                            //                 API,
+
+                            //                 formData
+
+                            //             );
+
+
+                            //             toast.success(
+                            //                 "Supporter added successfully"
+                            //             );
+
+
+                            //         }
+
+
+
+
+                            //         fetchSupporters();
+
+
+                            //         setShowForm(false);
+
+
+
+                            //         setFormData({
+
+                            //             imgLink: "",
+                            //             name: "",
+                            //             designation: "",
+                            //             description: ""
+
+                            //         });
+
+
+
+                            //     } catch (error) {
+
+                            //         toast.error(
+                            //             "Something went wrong"
+                            //         );
+
+
+                            //     }
+
+
+                            // }}
+
                             onSubmit={async (e) => {
-
                                 e.preventDefault();
-
-
-
-                                if (
-                                    !formData.imgLink ||
-                                    !formData.name ||
-                                    !formData.designation ||
-                                    !formData.description
-                                ) {
-
+                                if (!formData.imgLink || !formData.name || !formData.designation || !formData.description) {
                                     toast.error("Please fill all fields");
-
                                     return;
-
                                 }
 
-
+                                const payload = {
+                                    ...formData,
+                                    imgLink: getDisplayUrl(formData.imgLink), // normalize before saving
+                                };
 
                                 try {
-
-
                                     if (isEditing) {
-
-
-                                        await api.put(
-
-                                            `${API}/${selectedId}`,
-
-                                            formData
-
-                                        );
-
-
-                                        toast.success(
-                                            "Supporter updated successfully"
-                                        );
-
-
-
+                                        await api.put(`${API}/${selectedId}`, payload);
+                                        toast.success("Supporter updated successfully");
                                     } else {
-
-
-                                        await api.post(
-
-                                            API,
-
-                                            formData
-
-                                        );
-
-
-                                        toast.success(
-                                            "Supporter added successfully"
-                                        );
-
-
+                                        await api.post(API, payload);
+                                        toast.success("Supporter added successfully");
                                     }
-
-
-
-
                                     fetchSupporters();
-
-
                                     setShowForm(false);
-
-
-
-                                    setFormData({
-
-                                        imgLink: "",
-                                        name: "",
-                                        designation: "",
-                                        description: ""
-
-                                    });
-
-
-
+                                    setFormData({ imgLink: "", name: "", designation: "", description: "" });
                                 } catch (error) {
-
-                                    toast.error(
-                                        "Something went wrong"
-                                    );
-
-
+                                    toast.error("Something went wrong");
                                 }
-
-
                             }}
+                            
 
                         >
 
@@ -898,7 +967,7 @@ const Supporter = () => {
                                     <div className="rounded-2xl overflow-hidden border">
 
 
-                                        <img
+                                        {/* <img
 
                                             src={formData.imgLink}
 
@@ -913,6 +982,22 @@ const Supporter = () => {
 
                                             }}
 
+                                        /> */}
+
+                                        <img
+                                            src={getDisplayUrl(formData.imgLink)}
+                                            alt="preview"
+                                            referrerPolicy="no-referrer"
+                                            className="w-full h-56 object-cover"
+                                            onError={(e) => {
+                                                const fileId = getDriveFileId(formData.imgLink);
+                                                if (fileId && !e.target.dataset.fallbackTried) {
+                                                    e.target.dataset.fallbackTried = "true";
+                                                    e.target.src = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+                                                    return;
+                                                }
+                                                e.target.src = "https://placehold.co/800x500?text=Invalid+Image";
+                                            }}
                                         />
 
 

@@ -18,6 +18,7 @@ const typeLabels = {
   course: 'Course Application',
   tuition: 'Tuition Application',
   toss: 'TOSS Application',
+  abroad: 'Abroad Study Application',
 };
 
 const ApplicationPayment = () => {

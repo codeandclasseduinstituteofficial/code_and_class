@@ -69,6 +69,10 @@ import AdminAddLecutres from './Pages/admin/lectures/AdminAddLecutres'
 import ManageQuizzes from './Pages/admin/ManageQuizzes';
 import BuyQuiz from './Pages/BuyQuiz';
 import HomeSchoolingApplicationForm from './Pages/homeSchoolingApplicationForm';
+import Stationary from './Pages/Stationary';
+import AbroadPage from './Pages/AbroadPage';
+import StationeryProducts from './Pages/admin/StationeryProducts';
+import StationeryOrders from './Pages/admin/StationeryOrders';
 
 const App = () => {
   return (
@@ -98,6 +102,10 @@ const App = () => {
           <Route path="/quizzes" element={<Quizzes />} />
 
           <Route path="/quizzes/:quizId" element={<QuizAttempt />} />
+
+          <Route path="/stationary" element={<Stationary />} />
+
+          <Route path="/abroad" element={<AbroadPage />} />
 
           <Route
 
@@ -135,6 +143,24 @@ const App = () => {
             element={
               <PrivateRoute roles={['admin']}>
                 <Orders />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/stationery-products"
+            element={
+              <PrivateRoute roles={['admin']}>
+                <StationeryProducts />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/stationery-orders"
+            element={
+              <PrivateRoute roles={['admin']}>
+                <StationeryOrders />
               </PrivateRoute>
             }
           />

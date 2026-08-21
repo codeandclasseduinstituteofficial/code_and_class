@@ -115,6 +115,77 @@ const HomeSchooling = () => {
     const [testimonials, setTestimonials] = useState([]);
     const [activeVideo, setActiveVideo] = useState(null);
 
+    // =====================================================
+    // Google Drive URL helpers (same approach used on the
+    // About page). Drive "share" links don't work directly
+    // as an <img src> — we pull the file ID out and build
+    // URLs Drive will actually render, trying a few endpoints
+    // in order in case one is throttled.
+    // =====================================================
+    const getDriveFileId = (url) => {
+        if (!url) return null;
+        const match =
+            url.match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+            url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+    };
+
+    const getResourceKey = (url) => {
+        if (!url) return null;
+        const match = url.match(/resourcekey=([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+    };
+
+    const getImageUrlCandidates = (url, size = 400) => {
+        if (!url) return [url];
+        if (!url.includes("drive.google.com")) return [url];
+
+        const fileId = getDriveFileId(url);
+        if (!fileId) return [url];
+
+        const resourceKey = getResourceKey(url);
+        const rkParam = resourceKey ? `&resourcekey=${resourceKey}` : "";
+
+        return [
+            `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}${rkParam}`,
+            `https://lh3.googleusercontent.com/d/${fileId}=w${size}`,
+            `https://drive.google.com/uc?export=view&id=${fileId}`,
+        ];
+    };
+
+    // SmartImage: walks through fallback URL candidates on error
+    // (bounded — cannot loop forever), stopping at a placeholder
+    // once all candidates are exhausted.
+    const SmartImage = ({ src, alt, size, className }) => {
+        const candidates = React.useMemo(
+            () => getImageUrlCandidates(src, size),
+            [src, size]
+        );
+        const [attempt, setAttempt] = useState(0);
+
+        useEffect(() => {
+            setAttempt(0);
+        }, [src, size]);
+
+        const handleError = () => setAttempt((prev) => prev + 1);
+
+        const currentSrc =
+            attempt < candidates.length
+                ? candidates[attempt]
+                : "https://via.placeholder.com/400x400?text=Image+unavailable";
+
+        return (
+            <img
+                src={currentSrc}
+                alt={alt}
+                loading="lazy"
+                referrerPolicy="no-referrer"
+                onError={attempt < candidates.length ? handleError : undefined}
+                className={className}
+            />
+        );
+    };
+
     useEffect(() => {
         const fetchVideos = async () => {
             try {
@@ -1255,26 +1326,28 @@ font-black
 
                     <div className="grid md:grid-cols-3 gap-8 mt-12">
 
-                        {
-                            teachers.map((t, i) => (
-                                <div
-                                    key={t._id}
-                                    className=" bg-white rounded-3xl p-8 shadow-lg text-center hover:-translate-y-2 transition ">
-                                    <div className="text-5xl">
-                                        <img src={t?.imgLink} alt={t?.name} />
-                                    </div>
-
-                                    <h3 className=" text-xl font-bold mt-4 ">
-                                        {t?.name}
-                                    </h3>
-
-                                    <p className=" text-slate-500 mt-2 ">
-                                        {t?.designation}
-                                    </p>
-
+                        {teachers.map((t, i) => (
+                            <div
+                                key={t._id}
+                                className=" bg-white rounded-3xl p-8 shadow-lg text-center hover:-translate-y-2 transition ">
+                                <div className="mx-auto w-28 h-28 rounded-full overflow-hidden">
+                                    <SmartImage
+                                        src={t?.imgLink}
+                                        alt={t?.name}
+                                        size={300}
+                                        className="w-full h-full object-cover"
+                                    />
                                 </div>
-                            ))
-                        }
+
+                                <h3 className=" text-xl font-bold mt-4 ">
+                                    {t?.name}
+                                </h3>
+
+                                <p className=" text-slate-500 mt-2 ">
+                                    {t?.designation}
+                                </p>
+                            </div>
+                        ))}
 
                     </div>
 

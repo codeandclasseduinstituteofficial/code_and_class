@@ -215,6 +215,13 @@ const courseApplicationSchema = new mongoose.Schema(
   }
 );
 
+courseApplicationSchema.pre("save", async function (next) {
+  if (!this.serialNo) {
+    this.serialNo = `APP-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+  }
+  next();
+});
+
 const CourseApplication = mongoose.model(
   "CourseApplication",
   courseApplicationSchema
